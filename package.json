@@ -5,7 +5,7 @@
   "description": "부모님 혈당 관리 도우미 — 당뇨병 전단계 식사·운동 관리 웹앱",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "vite",
