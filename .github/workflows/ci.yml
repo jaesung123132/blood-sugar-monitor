@@ -24,14 +24,15 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '24'
+          cache: npm
 
       - name: 도구 버전 기록
         run: |
           node --version
           npm --version
 
-      - name: 패키지 설치
-        run: npm install --no-audit --no-fund
+      - name: 패키지 설치 (잠금 파일 버전 그대로)
+        run: npm ci --no-audit --no-fund
 
       - name: 설치 실패 시 npm 상세 로그 출력
         if: failure()
@@ -58,3 +59,51 @@ jobs:
             test -s "$f" || { echo "빌드 결과에 없음: $f"; exit 1; }
           done
           node -e "const m = JSON.parse(require('node:fs').readFileSync('dist/manifest.webmanifest', 'utf8')); if (!Array.isArray(m.icons) || m.icons.length < 3) { process.exit(1); } console.log('manifest OK:', m.name, m.icons.length + ' icons');"
+
+  database:
+    name: 데이터베이스 구조 · 보안 규칙(RLS) 검사
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      # CI에서만 잠깐 띄우는 빈 테스트용 데이터베이스입니다(실제 비밀번호 아님).
+      PGHOST: localhost
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v5
+
+      - name: psql 준비
+        run: |
+          if ! command -v psql >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
+          psql --version
+
+      - name: Supabase 기본 구성 흉내 (CI 전용)
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/00_supabase_stub.sql
+
+      - name: 마이그레이션 적용
+        run: |
+          for f in supabase/migrations/*.sql; do
+            echo "적용: $f"
+            psql -v ON_ERROR_STOP=1 -f "$f"
+          done
+
+      - name: 보안 규칙 테스트 (가족끼리만 볼 수 있는지)
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/10_rls_test.sql
