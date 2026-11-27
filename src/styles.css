@@ -1,0 +1,164 @@
+/* 부모님이 보기 쉽도록: 큰 글씨, 높은 대비, 큰 누름 영역 */
+:root {
+  --color-text: #111111;
+  --color-muted: #3d3d3d;
+  --color-bg: #ffffff;
+  --color-surface: #f1f4f2;
+  --color-primary: #0b5d3b; /* 흰 바탕 대비 약 7.9:1 */
+  --color-primary-text: #ffffff;
+  --color-border: #6b6b6b; /* 흰 바탕 대비 약 5.3:1 */
+  --color-focus: #1a4fd6;
+  --radius: 14px;
+  --touch: 3.5rem; /* 기본 글씨 20px 기준 70px */
+  color-scheme: light;
+}
+
+html {
+  /* 브라우저 기본 16px의 125% = 20px. 휴대폰 글꼴 크기 설정을 따라 함께 커집니다. */
+  font-size: 125%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.75rem 1rem;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.screen {
+  flex: 1;
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem calc(var(--touch) + 2.5rem + env(safe-area-inset-bottom));
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  line-height: 1.35;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.notice-list {
+  margin: 0 0 1.5rem;
+  padding-left: 1.25rem;
+}
+
+.notice-list li {
+  margin-bottom: 0.75rem;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--touch);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checkbox-row input {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  accent-color: var(--color-primary);
+}
+
+.button-primary {
+  display: block;
+  width: 100%;
+  min-height: var(--touch);
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button-primary:disabled {
+  background: #c9cfcc;
+  color: #333333;
+  cursor: not-allowed;
+}
+
+.tab-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 2px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.tab {
+  min-height: var(--touch);
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab-active {
+  background: var(--color-surface);
+  box-shadow: inset 0 4px 0 var(--color-primary);
+  color: var(--color-primary);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}

@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: 타입 검사 · 테스트 · 빌드
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: Node.js 22 설치
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 패키지 설치
+        run: npm install --no-audit --no-fund
+
+      - name: 설치된 주요 패키지 버전 기록
+        run: npm ls react react-dom vite vitest typescript @vitejs/plugin-react --depth=0 || true
+
+      - name: 타입 검사
+        run: npm run typecheck
+
+      - name: 단위 테스트 (근거 등록부 검사 포함)
+        run: npm test
+
+      - name: 배포용 빌드
+        run: npx vite build
