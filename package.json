@@ -8,11 +8,12 @@
     "node": "24.x"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run icons && vite",
+    "icons": "node scripts/generate-icons.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "verify": "npm run typecheck && npm run test",
-    "build": "npm run verify && vite build",
+    "build": "npm run verify && npm run icons && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

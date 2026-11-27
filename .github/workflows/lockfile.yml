@@ -1,0 +1,38 @@
+name: 패키지 잠금 파일 갱신
+
+# 수동으로만 실행합니다. package.json을 바꾼 뒤 이 작업을 돌리면
+# GitHub 서버에서 package-lock.json을 만들어 같은 브랜치에 커밋합니다(로컬 PC 불필요).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  lockfile:
+    name: package-lock.json 만들기
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v5
+
+      - name: Node.js 24 설치
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: 잠금 파일 만들기
+        run: npm install --package-lock-only --no-audit --no-fund
+
+      - name: 바뀐 것이 있으면 커밋
+        run: |
+          if git ls-files --error-unmatch package-lock.json >/dev/null 2>&1 && git diff --quiet -- package-lock.json; then
+            echo "package-lock.json에 바뀐 것이 없습니다."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "Update package-lock.json"
+          git push

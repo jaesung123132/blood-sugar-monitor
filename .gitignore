@@ -3,6 +3,9 @@ node_modules/
 dist/
 coverage/
 
+# 빌드할 때 만드는 앱 아이콘 (scripts/generate-icons.mjs)
+public/icons/
+
 # 배포 도구 로컬 설정
 .vercel/
 
